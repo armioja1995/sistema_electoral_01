@@ -21,7 +21,7 @@ import type { PollingTable, TableStatus } from "@/types";
 import { fmtNum } from "@/utils/format";
 
 export function RegistrationList() {
-  const { election, profile, isAdmin } = useApp();
+  const { election } = useApp();
   const router = useRouter();
   const eid = election?.id ?? "";
   const [search, setSearch] = useState("");
@@ -29,12 +29,11 @@ export function RegistrationList() {
   const [status, setStatus] = useState<TableStatus | "">("");
   const [page, setPage] = useState(1);
   const q = useDebounce(search, 250);
-  const assignedTo = isAdmin ? undefined : profile.id;
 
   useEffect(() => setPage(1), [q, placeId, status]);
   const { data, loading, error, reload } = useAsync(
-    () => (eid ? listTables(eid, { search: q, placeId, status, assignedTo }, page) : Promise.resolve({ rows: [], total: 0 })),
-    [eid, q, placeId, status, page, assignedTo]);
+    () => (eid ? listTables(eid, { search: q, placeId, status }, page) : Promise.resolve({ rows: [], total: 0 })),
+    [eid, q, placeId, status, page]);
   const places = useAsync(() => (eid ? placeOptions(eid) : Promise.resolve([])), [eid]);
   const live = useRealtimeRefresh(eid || undefined, reload, 600);
 
@@ -54,7 +53,7 @@ export function RegistrationList() {
     <>
       <PageHeader title="Registro de resultados"
         description={<>
-          {isAdmin ? "Todas las mesas del proceso activo." : "Mesas asignadas a su usuario."}{" "}
+          Todas las mesas del proceso activo. Busque y elija la mesa a registrar.{" "}
           <LiveIndicator status={live.status} />
         </>} />
       {election.status !== "en_proceso" && (
@@ -82,8 +81,7 @@ export function RegistrationList() {
         <DataTable columns={columns} rows={data?.rows ?? []} loading={loading} error={error} onRetry={reload}
           page={page} total={data?.total ?? 0} pageSize={PAGE_SIZE} onPage={setPage}
           onRowClick={(t) => router.push(`/registro/${t.id}`)}
-          emptyTitle={isAdmin ? "No hay mesas que coincidan" : "No tiene mesas asignadas"}
-          emptyDescription={isAdmin ? undefined : "Solicite a un administrador que le asigne mesas."} />
+          emptyTitle="No hay mesas que coincidan" />
       </Card>
     </>
   );

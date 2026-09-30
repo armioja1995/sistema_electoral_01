@@ -400,10 +400,8 @@ begin
     raise exception 'El proceso electoral está finalizado; no se admiten cambios.' using errcode = 'P0001';
   end if;
 
+  -- El registrador puede registrar cualquier mesa del proceso (assigned_to es solo referencial).
   if v_role = 'registrador' then
-    if v_table.assigned_to is distinct from v_uid then
-      raise exception 'Esta mesa no está asignada a su usuario.' using errcode = '42501';
-    end if;
     if v_election.status <> 'en_proceso' then
       raise exception 'El registro de resultados no está habilitado: el proceso electoral no está "En proceso".' using errcode = 'P0001';
     end if;

@@ -25,7 +25,7 @@ type Vals = Record<string, string>;
 const CLOSED: TableStatus[] = ["registrada", "observada", "validada"];
 
 export function TallyForm({ tableId }: { tableId: string | null }) {
-  const { profile, election, isAdmin } = useApp();
+  const { election, isAdmin } = useApp();
   const [table, setTable] = useState<PollingTable | null>(null);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [vals, setVals] = useState<Vals>({});
@@ -108,7 +108,6 @@ export function TallyForm({ tableId }: { tableId: string | null }) {
   const closed = CLOSED.includes(table.status);
   const lockReason =
     election?.status === "finalizado" ? "El proceso electoral está finalizado. El acta es de solo lectura." :
-    !isAdmin && table.assigned_to !== profile.id ? "Esta mesa no está asignada a su usuario." :
     !isAdmin && election?.status !== "en_proceso" ? "El registro se habilita cuando el proceso pasa a «En proceso»." :
     !isAdmin && closed ? "El acta ya fue cerrada. Solo un administrador puede modificarla." :
     null;

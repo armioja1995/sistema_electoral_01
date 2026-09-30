@@ -64,7 +64,7 @@ profiles ─< audit_logs          profiles ─< polling_tables.assigned_to (regi
 
 ### Flujo de registro de una mesa
 
-1. *Registro de resultados* → búsqueda por código de mesa o local (el registrador solo ve sus mesas asignadas; Enter abre la mesa si hay un único resultado).
+1. *Registro de resultados* → búsqueda por código de mesa o local (el registrador ve y elige cualquier mesa del proceso activo; Enter abre la mesa si hay un único resultado).
 2. Pantalla única del acta: mesa, local, electores habilitados, estado, candidatos con campos numéricos.
 3. Mientras se escribe, un resumen muestra la ecuación `válidos + nulos + blancos = emitidos`, no votaron, participación y abstención, con errores inmediatos.
 4. **Guardar borrador** → estado *En registro* (permite datos incompletos pero nunca negativos ni > habilitados).
@@ -90,7 +90,7 @@ profiles ─< audit_logs          profiles ─< polling_tables.assigned_to (regi
 
 ### Seguridad
 
-- **RLS en todas las tablas**. Lectura: usuarios activos. Escritura de configuración: solo administrador. Actas: solo vía RPC, que comprueba que el registrador tenga la mesa asignada y que el acta no esté cerrada.
+- **RLS en todas las tablas**. Lectura: usuarios activos. Escritura de configuración: solo administrador. Actas: solo vía RPC, que comprueba el rol, que el proceso esté *En proceso* y que el acta no esté cerrada.
 - Rol `anon` sin permisos. Vistas con `security_invoker` (respetan RLS).
 - Funciones `security definer` con `search_path` fijo y verificación de rol interna.
 - No se puede desactivar o degradar al último administrador (trigger).
@@ -234,7 +234,7 @@ Se valida cada fila y se informan los errores por número de línea. **Exportar 
 9. *Proyección* muestra "Estimación basada en X de Y mesas registradas" con la advertencia.
 10. Como administrador: abrir la mesa → *Historial*, y *Auditoría* para ver quién registró o modificó.
 11. *Estadísticas → Exportar resultados CSV*.
-12. Verificar restricciones: el usuario *consulta* no ve menús de edición; el registrador no puede abrir mesas no asignadas.
+12. Verificar restricciones: el usuario *consulta* no ve menús de edición; el registrador no puede modificar un acta ya cerrada.
 
 ---
 
